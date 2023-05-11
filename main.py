@@ -81,15 +81,15 @@ def productoras(productora:str):
 
 # Función 6: Inversion, ganancia, retorno y el año de estreno por película
 """
-OBSERVACIÓN: El nombre de la película se determinará según el campo 'title'. En situaciones en las que varias películas compartan el mismo nombre, 
-como en el caso de Cinderella, se seleccionará aquella que tenga la fecha más reciente de lanzamiento (release_date).
+OBSERVACIÓN: El nombre de la película se determinará según el campo 'title'. En situaciones en las que varias películas compartan 
+el mismo nombre, como en el caso de Cinderella, se seleccionará aquella que tenga la fecha más reciente de lanzamiento (release_date).
 """
 @app.get("/retorno/{pelicula}",summary="Inversion, ganancia, retorno y año de estreno por película")
 def retorno(pelicula):
     if pelicula not in df_movie.title.unique():
         return {"Nombre de película incorrecto. Datos correctos":list(df_movie.title.unique())[:10]}
     else:
-        index=df_movie[(df_movie.title==pelicula)].release_date.idxmax()
+        index=df_movie[df_movie.title==pelicula].release_date.idxmax()
         return {"pelicula":pelicula,
                 "inversion":int(df_movie.loc[index,"budget"]),
                 "ganancia":int(df_movie.loc[index,"revenue"]),
