@@ -9,6 +9,8 @@ df_movie["release_date"]=pd.to_datetime(df_movie.release_date)
 # Conversión de las columas 'production_countries' y 'production_companies' a tipo list
 df_movie["production_countries"]=df_movie.production_countries.apply(lambda x: eval(x))
 df_movie["production_companies"]=df_movie.production_companies.apply(lambda x: eval(x))
+# Data frame para el endpoint de ML
+df_ml=pd.read_csv(r"https://raw.githubusercontent.com/JersonGB22/ProyectoIndividual1_Henry/main/Datasets/API_ML_movie.csv")
 
 # Instanciamos la clase FastAPI para construir la aplicación de Interfaz de Consultas
 app=FastAPI()
@@ -95,3 +97,13 @@ def retorno(pelicula):
                 "ganancia":int(df_movie.loc[index,"revenue"]),
                 "retorno":float(df_movie.loc[index,"return"]),
                 "anio":int(df_movie.loc[index,"release_year"])}
+
+# Función 7 (ML): 5 películas con mayor puntaje (más similares) a una específica en orden descendente
+@app.get("/recomendacion/{titulo}",
+         summary="Cinco películas con mayor puntaje (más similares) a una específica en orden descendente")
+def recomendacion(titulo:str):
+    if titulo not in df_ml.title.tolist():
+        return {"Nombre de la película incorrecto. Datos de ejemplos correctos":list(df_ml.title)[:10]}
+    else:
+        indices=eval(df_ml[df_ml.title==titulo].index_movie.iloc[0])
+        return {"lista recomendada":list(df_ml.title.iloc[indices].values)}
