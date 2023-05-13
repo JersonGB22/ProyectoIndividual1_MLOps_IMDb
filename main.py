@@ -22,8 +22,12 @@ def welcome():
 
 ## Creación de los endpoints
 
-#Función 1: Cantidad de peliculas que se estrenaron por nombre de mes
-@app.get("/peliculas_mes/{mes}",summary="Cantidad de peliculas que se estrenaron por nombre de mes")
+"""
+OBSERVACIÓN: Por motivos de que Render no acepta la configuración regional que admite el idioma español (es) se tiene que crear 
+un dicionario lingüístico, tanto para los meses y días.
+
+### Código sin Render ###
+
 def peliculas_mes(mes:str):
     if mes not in df_movie.release_date.dt.month_name(locale="es").unique():
         return {"Nombre de mes incorrecto. Datos correctos":list(df_movie.release_date.dt.month_name(locale="es").unique())}
@@ -31,14 +35,55 @@ def peliculas_mes(mes:str):
         return {"mes":mes,
                 "cantidad":df_movie[df_movie.release_date.dt.month_name(locale="es")==mes].shape[0]}
 
-# Función 2: Cantidad de peliculas que se estrenaron por nombre del día de la semana
-@app.get("/peliculas_dia/{dia}",summary="Cantidad de peliculas que se estrenaron por nombre del día de la semana")
 def peliculas_dia(dia):
     if dia not in df_movie.release_date.dt.day_name(locale="es").unique():
         return {"Nombre de día de semana incorrecto. Datos correctos":list(df_movie.release_date.dt.day_name(locale="es").unique())}
     else:
         return {"dia":dia,
                 "cantidad":df_movie[df_movie.release_date.dt.day_name(locale="es")==dia].shape[0]}
+"""
+
+#Función 1: Cantidad de peliculas que se estrenaron por nombre de mes
+@app.get("/peliculas_mes/{mes}",summary="Cantidad de peliculas que se estrenaron por nombre de mes")
+def peliculas_mes(mes:str):
+    # Los argumentos los pasamos a minúsculas para evitar ambigüedades
+    mes=mes.lower()
+    dic_month= {
+    "enero": "January",
+    "febrero": "February",
+    "marzo": "March",
+    "abril": "April",
+    "mayo": "May",
+    "junio": "June",
+    "julio": "July",
+    "agosto": "August",
+    "septiembre": "September",
+    "octubre": "October",
+    "noviembre": "November",
+    "diciembre": "December"}
+    if mes not in list(dic_month.keys()):
+        return {"Nombre de mes incorrecto. Datos correctos":list(dic_month.keys())}
+    else:
+        return {"mes":mes,
+                "cantidad":df_movie[df_movie.release_date.dt.month_name(locale="en")==dic_month[mes]].shape[0]}
+
+# Función 2: Cantidad de peliculas que se estrenaron por nombre del día de la semana
+@app.get("/peliculas_dia/{dia}",summary="Cantidad de peliculas que se estrenaron por nombre del día de la semana")
+def peliculas_dia(dia:str):
+    dia=dia.lower()
+    dic_week= {
+    "lunes": "Monday",
+    "martes": "Tuesday",
+    "miércoles": "Wednesday",
+    "jueves": "Thursday",
+    "viernes": "Friday",
+    "sábado": "Saturday",
+    "domingo": "Sunday"}
+    if dia not in list(dic_week.keys()):
+        return {"Nombre de día de semana incorrecto. Datos correctos":list(dic_week.keys())}
+    else:
+        return {"dia":dia,
+                "cantidad":df_movie[df_movie.release_date.dt.day_name(locale="en")==dic_week[dia]].shape[0]}       
 
 # Función 3: Cantidad de peliculas, ganancia total y promedio por franquicia
 # OBSERVACIÓN: La ganancia se tomará del campo 'revenue', que en español significa ganancia
