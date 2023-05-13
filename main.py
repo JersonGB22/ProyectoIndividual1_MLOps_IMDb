@@ -23,8 +23,8 @@ def welcome():
 ## Creación de los endpoints
 
 """
-OBSERVACIÓN: Por motivos de que Render no acepta la configuración regional que admite el idioma español (es) se tiene que crear 
-un dicionario lingüístico, tanto para los meses y días.
+OBSERVACIÓN: Por motivos de que Render no acepta la configuración regional que admite el idioma español (es) ni el idioma inglés (en)
+se tiene que crear un dicionario lingüístico, tanto para los meses y días.
 
 ### Código sin Render ###
 
@@ -49,23 +49,23 @@ def peliculas_mes(mes:str):
     # Los argumentos los pasamos a minúsculas para evitar ambigüedades
     mes=mes.lower()
     dic_month= {
-    "enero": "January",
-    "febrero": "February",
-    "marzo": "March",
-    "abril": "April",
-    "mayo": "May",
-    "junio": "June",
-    "julio": "July",
-    "agosto": "August",
-    "septiembre": "September",
-    "octubre": "October",
-    "noviembre": "November",
-    "diciembre": "December"}
+    "enero": 1,
+    "febrero": 2,
+    "marzo": 3,
+    "abril": 4,
+    "mayo": 5,
+    "junio": 6,
+    "julio": 7,
+    "agosto": 8,
+    "septiembre": 9,
+    "octubre": 10,
+    "noviembre": 11,
+    "diciembre": 12}
     if mes not in list(dic_month.keys()):
         return {"Nombre de mes incorrecto. Datos correctos":list(dic_month.keys())}
     else:
         return {"mes":mes,
-                "cantidad":df_movie[df_movie.release_date.dt.month_name(locale="en")==dic_month[mes]].shape[0]}
+                "cantidad":df_movie[df_movie.release_date.dt.month==dic_month[mes]].shape[0]}
 
 # Función 2: Cantidad de peliculas que se estrenaron por nombre del día de la semana
 @app.get("/peliculas_dia/{dia}",summary="Cantidad de peliculas que se estrenaron por nombre del día de la semana")
@@ -83,7 +83,7 @@ def peliculas_dia(dia:str):
         return {"Nombre de día de semana incorrecto. Datos correctos":list(dic_week.keys())}
     else:
         return {"dia":dia,
-                "cantidad":df_movie[df_movie.release_date.dt.day_name(locale="en")==dic_week[dia]].shape[0]}       
+                "cantidad":df_movie[df_movie.release_date.dt.day_name()==dic_week[dia]].shape[0]}       
 
 # Función 3: Cantidad de peliculas, ganancia total y promedio por franquicia
 # OBSERVACIÓN: La ganancia se tomará del campo 'revenue', que en español significa ganancia
