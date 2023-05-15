@@ -123,7 +123,7 @@ Una vez que hemos creado el archivo `requirements.txt`, podemos seguir las instr
 - Nota: Para acceder a la documentación de la API, visite la siguiente URL en su navegador: <https://jersonbgb-projectoindividual1-henry.onrender.com/docs>. Al hacerlo, se abrirá la página de documentación interactiva, la cual le permitirá explorar todos los endpoints disponibles y probarlos en tiempo real.
 La documentación interactiva ha sido generada automáticamente por FastAPI, y en ella encontrará una descripción detallada de cada uno de los endpoints, así como de los parámetros que aceptan y los esquemas de respuesta. De esta manera, podrá tener un mayor entendimiento sobre el funcionamiento de la API y cómo utilizarla de manera efectiva.
 
-## [Link al video explicativo del proyecto](https://drive.google.com/file/d/1z51YP4_ciY87VknH25hNNZNqHefv50x_/view?usp=sharing)
+## [Link al video explicativo del proyecto](https://drive.google.com/file/d/1Dlg6_kQGin3Lw1qxQvw_eMI7tyDLgMKP/view?usp=sharing)
 
 # **Tecnologías utilizadas:**
 | Technology | Documentation |
