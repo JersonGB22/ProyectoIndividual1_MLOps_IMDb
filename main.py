@@ -9,6 +9,12 @@ df_movie["release_date"]=pd.to_datetime(df_movie.release_date)
 # Conversión de las columas 'production_countries' y 'production_companies' a tipo list
 df_movie["production_countries"]=df_movie.production_countries.apply(lambda x: eval(x))
 df_movie["production_companies"]=df_movie.production_companies.apply(lambda x: eval(x))
+# Conversión de los campos necesarios a minúsculas para optimizar las consultas
+df_movie["belongs_to_collection"]=df_movie.belongs_to_collection.apply(lambda x: x.lower() if pd.notnull(x) else x)
+df_movie["production_countries"]=df_movie.production_countries.apply(lambda x: [i.lower() for i in x])
+df_movie["production_companies"]=df_movie.production_companies.apply(lambda x: [i.lower() for i in x])
+df_movie["title"]=df_movie.title.apply(lambda x: x.lower())
+
 # Data frame para el endpoint de ML
 df_ml=pd.read_csv(r"https://raw.githubusercontent.com/JersonGB22/ProyectoIndividual1_Henry/main/Datasets/API_ML_movie.csv")
 
@@ -46,7 +52,7 @@ def peliculas_dia(dia):
 #Función 1: Cantidad de peliculas que se estrenaron por nombre de mes
 @app.get("/peliculas_mes/{mes}",summary="Cantidad de peliculas que se estrenaron por nombre de mes")
 def peliculas_mes(mes:str):
-    # Los argumentos los pasamos a minúsculas para evitar ambigüedades
+    # Para evitar ambigüedades, se convierten los argumentos a minúsculas en todas las funciones.
     mes=mes.lower()
     dic_month= {
     "enero": "January",
@@ -89,8 +95,10 @@ def peliculas_dia(dia:str):
 # OBSERVACIÓN: La ganancia se tomará del campo 'revenue', que en español significa ganancia
 @app.get("/franquicia/{franquicia}",summary="Cantidad de peliculas, ganancia total y promedio por franquicia")
 def franquicia(franquicia:str):
+    franquicia=franquicia.lower()
     if franquicia not in df_movie.belongs_to_collection.dropna().unique():
-        return {"Nombre de franquicia incorrecto. Datos de ejemplo correctos":list(df_movie.belongs_to_collection.dropna().unique())[:10]}
+        return {"Nombre de franquicia incorrecto. Algunos datos de ejemplo correctos":
+                list(df_movie.belongs_to_collection.dropna().unique())[:10]}
     else:
         df=df_movie[df_movie.belongs_to_collection==franquicia]
         return {"franquicia":franquicia,
@@ -102,8 +110,9 @@ def franquicia(franquicia:str):
 # OBSERVACIÓN: El país se considerará si se encuentra en la lista de países de la columna "production_countries"
 @app.get("/pelicula_pais/{pais}",summary="Cantidad de películas producidas por país")
 def peliculas_pais(pais:str):
+    pais=pais.lower()
     if pais not in df_movie.production_countries.explode().dropna().unique():
-        return {"Nombre de país inválido. Datos de ejemplo correctos":
+        return {"Nombre de país inválido. Algunos datos de ejemplo correctos":
                 list(df_movie.production_countries.explode().dropna().unique())[:10]}
     else:
         return {"pais":pais,
@@ -117,8 +126,9 @@ productora de películas.
 """
 @app.get("/productoras/{productora}",summary="Ganancia y cantidad total de peliculas por productora")
 def productoras(productora:str):
+    productora=productora.lower()
     if productora not in df_movie.production_companies.explode().dropna().unique():
-        return {"Nombre de productora incorrecto. Datos de ejemplo correctos":
+        return {"Nombre de productora incorrecto. Algunos datos de ejemplo correctos":
                 list(df_movie.production_companies.explode().dropna().unique())[:10]}
     else:
         df=df_movie[df_movie.production_companies.apply(lambda x: productora in x)]
@@ -132,9 +142,10 @@ OBSERVACIÓN: El nombre de la película se determinará según el campo 'title'.
 el mismo nombre, como en el caso de Cinderella, se seleccionará aquella que tenga la fecha más reciente de lanzamiento (release_date).
 """
 @app.get("/retorno/{pelicula}",summary="Inversion, ganancia, retorno y año de estreno por película")
-def retorno(pelicula):
+def retorno(pelicula:str):
+    pelicula=pelicula.lower()
     if pelicula not in df_movie.title.unique():
-        return {"Nombre de película incorrecto. Datos correctos":list(df_movie.title.unique())[:10]}
+        return {"Nombre de película incorrecto. Algunos datos de ejemplo correctos":list(df_movie.title.unique())[:10]}
     else:
         index=df_movie[df_movie.title==pelicula].release_date.idxmax()
         return {"pelicula":pelicula,
@@ -147,8 +158,9 @@ def retorno(pelicula):
 @app.get("/recomendacion/{titulo}",
          summary="Cinco películas con mayor puntaje (más similares) a una específica en orden descendente")
 def recomendacion(titulo:str):
+    titulo=titulo.lower()
     if titulo not in df_ml.title.tolist():
-        return {"Nombre de la película incorrecto. Datos de ejemplos correctos":list(df_ml.title)[:10]}
+        return {"Nombre de la película incorrecto. Algunos datos de ejemplo correctos":list(df_ml.title)[:10]}
     else:
         indices=eval(df_ml[df_ml.title==titulo].index_movie.iloc[0])
         return {"lista recomendada":list(df_ml.title.iloc[indices].values)}
